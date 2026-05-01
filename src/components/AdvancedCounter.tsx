@@ -1,10 +1,23 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function AdvancedCounter() {
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(() => {
+    const saved = localStorage.getItem("count");
+    return saved ? Number(saved) : 0;
+  });
   const [step, setStep] = useState(1);
-  const [history, setHistory] = useState<number[]>([]);
+  const [history, setHistory] = useState<number[]>(() => {
+    const saved = localStorage.getItem("history");
+    console.log("Loading history from localstorage: ", saved);
+    return saved ? JSON.parse(saved) : [];
+  });
 
+  useEffect(() => {
+    localStorage.setItem("count", String(count));
+  }, [count]);
+  useEffect(() => {
+    localStorage.setItem("history", JSON.stringify(history));
+  }, [history]);
   const handleIncrement = () => {
     const newCount = count + step;
     setCount(newCount);
